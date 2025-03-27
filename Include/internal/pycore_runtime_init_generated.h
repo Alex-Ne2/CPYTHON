@@ -627,6 +627,7 @@ extern "C" {
     INIT_ID(__fspath__), \
     INIT_ID(__ge__), \
     INIT_ID(__get__), \
+    INIT_ID(__get_local_events__), \
     INIT_ID(__getattr__), \
     INIT_ID(__getattribute__), \
     INIT_ID(__getinitargs__), \
@@ -713,6 +714,7 @@ extern "C" {
     INIT_ID(__rtruediv__), \
     INIT_ID(__rxor__), \
     INIT_ID(__set__), \
+    INIT_ID(__set_local_events__), \
     INIT_ID(__set_name__), \
     INIT_ID(__setattr__), \
     INIT_ID(__setitem__), \
@@ -924,6 +926,7 @@ extern "C" {
     INIT_ID(errors), \
     INIT_ID(event), \
     INIT_ID(eventmask), \
+    INIT_ID(events), \
     INIT_ID(exc_type), \
     INIT_ID(exc_value), \
     INIT_ID(excepthook), \
@@ -1261,6 +1264,7 @@ extern "C" {
     INIT_ID(times), \
     INIT_ID(timetuple), \
     INIT_ID(timeunit), \
+    INIT_ID(tool), \
     INIT_ID(top), \
     INIT_ID(trace_callback), \
     INIT_ID(traceback), \
