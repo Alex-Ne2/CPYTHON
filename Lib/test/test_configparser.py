@@ -992,7 +992,6 @@ class ConfigParserTestCase(BasicTestCase, unittest.TestCase):
         cf.set("sect1", "option1", "foo")
         cf.set("sect2", "option2", "bar")
 
-
         expected_str = (
             "<ConfigParser: {'sect1': {'option1': 'foo'}, 'sect2': {'option2': 'bar'}, "
             "'sect3': {}, 'sect4': {}, 'sect5': {}, 'sect6': {}}>"
