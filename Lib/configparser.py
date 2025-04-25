@@ -1071,14 +1071,15 @@ class RawConfigParser(MutableMapping):
             "interpolation": type(self._interpolation).__name__,
         }
         init_params = {k: v for k, v in init_params.items() if v is not None}
+        sections_count = len(self._sections)
         state_summary = {
             "loaded_sources": self._loaded_sources,
-            "sections_count": len(self._sections),
-            "sections": list(self._sections.keys())[:5],  # Limit to 5 section names for readability
+            "sections_count": sections_count,
+            "sections": list(self._sections)[:5],  # limit to 5 section names for readability
         }
 
-        if len(self._sections) > 5:
-            state_summary["sections_truncated"] = f"...and {len(self._sections) - 5} more"
+        if sections_count > 5:
+            state_summary["sections_truncated"] = f"...and {sections_count - 5} more"
 
         return (f"<{self.__class__.__name__}("
                 f"params={init_params}, "
