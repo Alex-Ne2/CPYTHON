@@ -1084,7 +1084,6 @@ class RawConfigParser(MutableMapping):
                 f"params={init_params}, "
                 f"state={state_summary})>")
 
-
     def _read(self, fp, fpname):
         """Parse a sectioned configuration file.
 
