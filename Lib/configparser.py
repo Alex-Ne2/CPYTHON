@@ -1060,7 +1060,6 @@ class RawConfigParser(MutableMapping):
         }
         return f"<ConfigParser: {config_dict}>"
 
-
     def __repr__(self):
         init_params = {
             "defaults": self._defaults if self._defaults else None,
