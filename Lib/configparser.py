@@ -691,7 +691,6 @@ class RawConfigParser(MutableMapping):
             self._read_defaults(defaults)
         self._allow_unnamed_section = allow_unnamed_section
 
-
     def defaults(self):
         return self._defaults
 
