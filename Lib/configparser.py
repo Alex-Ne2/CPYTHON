@@ -670,6 +670,7 @@ class RawConfigParser(MutableMapping):
                 self._optcre = re.compile(self._OPT_TMPL.format(delim=d),
                                           re.VERBOSE)
         self._comments = _CommentSpec(comment_prefixes or (), inline_comment_prefixes or ())
+        self._loaded_sources = []
         self._strict = strict
         self._allow_no_value = allow_no_value
         self._empty_lines_in_values = empty_lines_in_values
@@ -689,6 +690,7 @@ class RawConfigParser(MutableMapping):
         if defaults:
             self._read_defaults(defaults)
         self._allow_unnamed_section = allow_unnamed_section
+
 
     def defaults(self):
         return self._defaults
@@ -752,6 +754,7 @@ class RawConfigParser(MutableMapping):
             try:
                 with open(filename, encoding=encoding) as fp:
                     self._read(fp, filename)
+                    self._loaded_sources.append(filename)
             except OSError:
                 continue
             if isinstance(filename, os.PathLike):
@@ -773,11 +776,13 @@ class RawConfigParser(MutableMapping):
             except AttributeError:
                 source = '<???>'
         self._read(f, source)
+        self._loaded_sources.append(source)
 
     def read_string(self, string, source='<string>'):
         """Read configuration from a given string."""
         sfile = io.StringIO(string)
         self.read_file(sfile, source)
+        self._loaded_sources.append(source)
 
     def read_dict(self, dictionary, source='<dict>'):
         """Read configuration from a dictionary.
@@ -809,6 +814,7 @@ class RawConfigParser(MutableMapping):
                     raise DuplicateOptionError(section, key, source)
                 elements_added.add((section, key))
                 self.set(section, key, value)
+        self._loaded_sources.append(source)
 
     def get(self, section, option, *, raw=False, vars=None, fallback=_UNSET):
         """Get an option value for a given section.
@@ -1047,6 +1053,39 @@ class RawConfigParser(MutableMapping):
     def __iter__(self):
         # XXX does it break when underlying container state changed?
         return itertools.chain((self.default_section,), self._sections.keys())
+
+    def __str__(self):
+        config_dict = {
+            section: {key: value for key, value in self.items(section, raw=True)}
+            for section in self.sections()
+        }
+        return f"<ConfigParser: {config_dict}>"
+
+
+    def __repr__(self):
+        init_params = {
+            "defaults": self._defaults if self._defaults else None,
+            "dict_type": type(self._dict).__name__,
+            "allow_no_value": self._allow_no_value,
+            "delimiters": self._delimiters,
+            "strict": self._strict,
+            "default_section": self.default_section,
+            "interpolation": type(self._interpolation).__name__,
+        }
+        init_params = {k: v for k, v in init_params.items() if v is not None}
+        state_summary = {
+            "loaded_sources": self._loaded_sources,
+            "sections_count": len(self._sections),
+            "sections": list(self._sections.keys())[:5],  # Limit to 5 section names for readability
+        }
+
+        if len(self._sections) > 5:
+            state_summary["sections_truncated"] = f"...and {len(self._sections) - 5} more"
+
+        return (f"<{self.__class__.__name__}("
+                f"params={init_params}, "
+                f"state={state_summary})>")
+
 
     def _read(self, fp, fpname):
         """Parse a sectioned configuration file.
