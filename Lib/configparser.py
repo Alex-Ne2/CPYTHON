@@ -758,7 +758,7 @@ class RawConfigParser(MutableMapping):
             if isinstance(filename, os.PathLike):
                 filename = os.fspath(filename)
             read_ok.append(filename)
-        self._loaded_sources.extend(read_ok)
+            self._loaded_sources.append(read_ok)
         return read_ok
 
     def read_file(self, f, source=None):

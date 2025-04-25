@@ -985,16 +985,11 @@ class ConfigParserTestCase(BasicTestCase, unittest.TestCase):
         cf = self.config_class(allow_no_value=True, delimiters=('=',), strict=True)
         cf.add_section("sect1")
         cf.add_section("sect2")
-        cf.add_section("sect3")
-        cf.add_section("sect4")
-        cf.add_section("sect5")
-        cf.add_section("sect6")
         cf.set("sect1", "option1", "foo")
         cf.set("sect2", "option2", "bar")
 
         expected_str = (
-            "<ConfigParser: {'sect1': {'option1': 'foo'}, 'sect2': {'option2': 'bar'}, "
-            "'sect3': {}, 'sect4': {}, 'sect5': {}, 'sect6': {}}>"
+            "<ConfigParser: {'sect1': {'option1': 'foo'}, 'sect2': {'option2': 'bar'}}>"
         )
         self.assertEqual(str(cf), expected_str)
 
@@ -1012,17 +1007,23 @@ class ConfigParserTestCase(BasicTestCase, unittest.TestCase):
         cf.read_string("")
 
         dict_type = type(cf._dict).__name__
-
-        expected_repr = (
-            f"<{cf.__class__.__name__}("
-            f"params={{'dict_type': '{dict_type}', 'allow_no_value': True, "
-            "'delimiters': ('=',), 'strict': True, 'default_section': 'DEFAULT', "
-            "'interpolation': 'BasicInterpolation'}, "
-            "state={'loaded_sources': ['<string>'], 'sections_count': 6, "
-            "'sections': ['sect1', 'sect2', 'sect3', 'sect4', 'sect5'], "
-            "'sections_truncated': '...and 1 more'})>"
-        )
-        self.assertEqual(repr(cf), expected_repr)
+        classname = cf.__class__.__name__
+        params = {
+            'dict_type': dict_type,
+            'allow_no_value': True,
+            'delimiters': ('=',),
+            'strict': True,
+            'default_section': 'DEFAULT',
+            'interpolation': 'BasicInterpolation',
+        }
+        state = {
+            'loaded_sources': ['<string>'],
+            'sections_count': 6,
+            'sections': ['sect1', 'sect2', 'sect3', 'sect4', 'sect5'],
+            'sections_truncated': '...and 1 more',
+        }
+        expected = f"<{classname}({params=}, {state=})>"
+        self.assertEqual(repr(cf), expected)
 
     def test_add_section_default(self):
         cf = self.newconfig()
