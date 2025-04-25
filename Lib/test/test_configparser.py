@@ -998,7 +998,6 @@ class ConfigParserTestCase(BasicTestCase, unittest.TestCase):
         )
         self.assertEqual(str(cf), expected_str)
 
-
         dict_type = type(cf._dict).__name__
 
         expected_repr = (
