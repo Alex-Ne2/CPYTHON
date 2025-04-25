@@ -980,7 +980,7 @@ class ConfigParserTestCase(BasicTestCase, unittest.TestCase):
         self.assertRaises(TypeError, cf.set, "sect", 123, "invalid opt name!")
         self.assertRaises(TypeError, cf.add_section, 123)
 
-    def test_str_and_repr(self):
+    def test_str(self):
         self.maxDiff = None
         cf = self.config_class(allow_no_value=True, delimiters=('=',), strict=True)
         cf.add_section("sect1")
@@ -998,6 +998,19 @@ class ConfigParserTestCase(BasicTestCase, unittest.TestCase):
         )
         self.assertEqual(str(cf), expected_str)
 
+    def test_repr(self):
+        self.maxDiff = None
+        cf = self.config_class(allow_no_value=True, delimiters=('=',), strict=True)
+        cf.add_section("sect1")
+        cf.add_section("sect2")
+        cf.add_section("sect3")
+        cf.add_section("sect4")
+        cf.add_section("sect5")
+        cf.add_section("sect6")
+        cf.set("sect1", "option1", "foo")
+        cf.set("sect2", "option2", "bar")
+        cf.read_string("")
+
         dict_type = type(cf._dict).__name__
 
         expected_repr = (
@@ -1005,7 +1018,7 @@ class ConfigParserTestCase(BasicTestCase, unittest.TestCase):
             f"params={{'dict_type': '{dict_type}', 'allow_no_value': True, "
             "'delimiters': ('=',), 'strict': True, 'default_section': 'DEFAULT', "
             "'interpolation': 'BasicInterpolation'}, "
-            "state={'loaded_sources': [], 'sections_count': 6, "
+            "state={'loaded_sources': ['<string>'], 'sections_count': 6, "
             "'sections': ['sect1', 'sect2', 'sect3', 'sect4', 'sect5'], "
             "'sections_truncated': '...and 1 more'})>"
         )

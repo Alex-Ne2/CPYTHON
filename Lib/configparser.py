@@ -753,12 +753,12 @@ class RawConfigParser(MutableMapping):
             try:
                 with open(filename, encoding=encoding) as fp:
                     self._read(fp, filename)
-                    self._loaded_sources.append(filename)
             except OSError:
                 continue
             if isinstance(filename, os.PathLike):
                 filename = os.fspath(filename)
             read_ok.append(filename)
+        self._loaded_sources.extend(read_ok)
         return read_ok
 
     def read_file(self, f, source=None):
@@ -781,7 +781,6 @@ class RawConfigParser(MutableMapping):
         """Read configuration from a given string."""
         sfile = io.StringIO(string)
         self.read_file(sfile, source)
-        self._loaded_sources.append(source)
 
     def read_dict(self, dictionary, source='<dict>'):
         """Read configuration from a dictionary.
