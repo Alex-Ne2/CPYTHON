@@ -4051,6 +4051,17 @@ dummy_func(
             _CALL_TUPLE_1 +
             _CHECK_PERIODIC;
 
+        tier2 op(_CHECK_INIT_MATCHES_VERSIONS, (type_version/2, init_func_version/2, callable, unused, unused[oparg] -- callable, unused, unused[oparg])) {
+            PyObject *callable_o = PyStackRef_AsPyObjectBorrow(callable);
+            DEOPT_IF(!PyType_Check(callable_o));
+            PyTypeObject *tp = (PyTypeObject *)callable_o;
+            DEOPT_IF(tp->tp_version_tag != type_version);
+            assert(tp->tp_flags & Py_TPFLAGS_INLINE_VALUES);
+            PyHeapTypeObject *cls = (PyHeapTypeObject *)callable_o;
+            PyFunctionObject *init_func = (PyFunctionObject *)cls->_spec_cache.init;
+            DEOPT_IF(init_func->func_version != init_func_version);
+        }
+
         op(_CHECK_AND_ALLOCATE_OBJECT, (type_version/2, callable, self_or_null, unused[oparg] -- callable, self_or_null, unused[oparg])) {
             PyObject *callable_o = PyStackRef_AsPyObjectBorrow(callable);
             DEOPT_IF(!PyStackRef_IsNull(self_or_null));

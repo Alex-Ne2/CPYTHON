@@ -1923,6 +1923,20 @@ class TestUopsOptimization(unittest.TestCase):
         self.assertNotIn("_GUARD_TOS_INT", uops)
         self.assertIn("_CALL_LEN", uops)
 
+    def test_trace_through_simple_init(self):
+        def testfunc(n):
+            for i in range(n):
+                Initer(i)
+
+        _, ex = self._run_with_optimizer(testfunc, TIER2_THRESHOLD)
+        self.assertIsNotNone(ex)
+        uops = get_opnames(ex)
+        self.assertIn("_CHECK_INIT_MATCHES_VERSIONS", uops)
+
+
+class Initer:
+    def __init__(self, x):
+        self.x = x
 
 def global_identity(x):
     return x

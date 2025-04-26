@@ -1944,6 +1944,10 @@
             break;
         }
 
+        case _CHECK_INIT_MATCHES_VERSIONS: {
+            break;
+        }
+
         case _CHECK_AND_ALLOCATE_OBJECT: {
             JitOptSymbol **args;
             JitOptSymbol *self;
