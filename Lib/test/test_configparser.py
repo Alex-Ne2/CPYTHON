@@ -1004,7 +1004,7 @@ class ConfigParserTestCase(BasicTestCase, unittest.TestCase):
         cf.add_section("sect6")
         cf.set("sect1", "option1", "foo")
         cf.set("sect2", "option2", "bar")
-        cf.read_string("") # To trigger the loading of sources
+        cf.read_string("")  # to trigger the loading of sources
 
         dict_type = type(cf._dict).__name__
         params = {
