@@ -1004,10 +1004,9 @@ class ConfigParserTestCase(BasicTestCase, unittest.TestCase):
         cf.add_section("sect6")
         cf.set("sect1", "option1", "foo")
         cf.set("sect2", "option2", "bar")
-        cf.read_string("")
+        cf.read_string("") # To trigger the loading of sources
 
         dict_type = type(cf._dict).__name__
-        classname = cf.__class__.__name__
         params = {
             'dict_type': dict_type,
             'allow_no_value': True,
@@ -1022,7 +1021,7 @@ class ConfigParserTestCase(BasicTestCase, unittest.TestCase):
             'sections': ['sect1', 'sect2', 'sect3', 'sect4', 'sect5'],
             'sections_truncated': '...and 1 more',
         }
-        expected = f"<{classname}({params=}, {state=})>"
+        expected = f"<{type(cf).__name__}({params=}, {state=})>"
         self.assertEqual(repr(cf), expected)
 
     def test_add_section_default(self):
