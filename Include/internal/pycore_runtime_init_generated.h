@@ -966,6 +966,7 @@ extern "C" {
     INIT_ID(flags), \
     INIT_ID(flush), \
     INIT_ID(fold), \
+    INIT_ID(fold_spaces), \
     INIT_ID(follow_symlinks), \
     INIT_ID(format), \
     INIT_ID(format_spec), \
@@ -1152,6 +1153,7 @@ extern "C" {
     INIT_ID(outpath), \
     INIT_ID(overlapped), \
     INIT_ID(owner), \
+    INIT_ID(pad), \
     INIT_ID(pages), \
     INIT_ID(parameter), \
     INIT_ID(parent), \
@@ -1309,11 +1311,14 @@ extern "C" {
     INIT_ID(weekday), \
     INIT_ID(which), \
     INIT_ID(who), \
+    INIT_ID(width), \
     INIT_ID(withdata), \
+    INIT_ID(wrap), \
     INIT_ID(writable), \
     INIT_ID(write), \
     INIT_ID(write_through), \
     INIT_ID(year), \
+    INIT_ID(z85), \
     INIT_ID(zdict), \
     INIT_ID(zstd_dict), \
 }
