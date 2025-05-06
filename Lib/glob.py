@@ -14,7 +14,7 @@ import sys
 __all__ = ["glob", "iglob", "escape", "translate"]
 
 def glob(pathname, *, root_dir=None, dir_fd=None, recursive=False,
-        include_hidden=False):
+        include_hidden=False, expand_tilde=False):
     """Return a list of paths matching a pathname pattern.
 
     The pattern may contain simple shell-style wildcards a la
@@ -29,10 +29,10 @@ def glob(pathname, *, root_dir=None, dir_fd=None, recursive=False,
     zero or more directories and subdirectories.
     """
     return list(iglob(pathname, root_dir=root_dir, dir_fd=dir_fd, recursive=recursive,
-                      include_hidden=include_hidden))
+                      include_hidden=include_hidden, expand_tilde=expand_tilde))
 
 def iglob(pathname, *, root_dir=None, dir_fd=None, recursive=False,
-          include_hidden=False):
+          include_hidden=False, expand_tilde=False):
     """Return an iterator which yields the paths matching a pathname pattern.
 
     The pattern may contain simple shell-style wildcards a la
@@ -45,6 +45,14 @@ def iglob(pathname, *, root_dir=None, dir_fd=None, recursive=False,
     """
     sys.audit("glob.glob", pathname, recursive)
     sys.audit("glob.glob/2", pathname, recursive, root_dir, dir_fd)
+
+    if expand_tilde:
+        tilde = '~' if isinstance(pathname, str) else b'~'
+        sep = os.path.sep if isinstance(pathname, str) else os.path.sep.encode('ascii')
+        home = str(os.path.expanduser('~')) if isinstance(pathname, str) else os.path.expanduser('~').encode('ascii')
+        if pathname == tilde or pathname.startswith(tilde + sep):
+            pathname = pathname.replace(tilde, home, 1)
+
     if root_dir is not None:
         root_dir = os.fspath(root_dir)
     else:

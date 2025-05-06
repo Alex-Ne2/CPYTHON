@@ -1149,6 +1149,13 @@ getopt
   (Contributed by Serhiy Storchaka in :gh:`126390`.)
 
 
+glob
+----
+
+* Add *expand_tilde* option to :func:`~glob.glob`.
+  (Contributed by Stan Ulbrych in :gh:`132757`.)
+
+
 graphlib
 --------
 
