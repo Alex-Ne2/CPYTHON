@@ -274,7 +274,7 @@ def print_exception():
         if ((not isinstance(exc, NameError) and not isinstance(exc, AttributeError))
             or "\n" not in str(exc)):
             lines = get_message_lines(typ, exc, tb)
-        else:  # User-created Name/AttributeError with multiline message, GH-135511. 
+        else:  # User-created Name/AttributeError with multiline message, GH-135511.
              lines = [f"{typ.__name__}: {str(exc)}"]
         for line in lines:
             print(line, end='', file=efile)
