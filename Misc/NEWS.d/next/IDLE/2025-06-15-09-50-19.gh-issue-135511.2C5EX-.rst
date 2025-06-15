@@ -1,1 +1,1 @@
-Fixed `NameError` and `AttributeError` lack of the message in IDLE
+Fix display of :exc:`NameError` and :exc:`AttributeError` with multi-line message.
