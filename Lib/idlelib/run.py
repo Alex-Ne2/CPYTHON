@@ -271,10 +271,13 @@ def print_exception():
                        "debugger_r.py", "bdb.py")
             cleanup_traceback(tbe, exclude)
             traceback.print_list(tbe, file=efile)
-        if not isinstance(exc, (NameError, AttributeError)) or "\n" in str(exc):
+        if not isinstance(exc, NameError) and not isinstance(exc, AttributeError):
             lines = get_message_lines(typ, exc, tb)
         else:
-            lines = [f"{typ.__name__}: {str(exc)}"]
+            if "\n" in str(exc):
+                lines = [f"{typ.__name__}: {str(exc)}"]
+            else:
+                lines = get_message_lines(typ, exc, tb)
         for line in lines:
             print(line, end='', file=efile)
 
