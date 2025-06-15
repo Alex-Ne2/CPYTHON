@@ -272,7 +272,7 @@ def print_exception():
             cleanup_traceback(tbe, exclude)
             traceback.print_list(tbe, file=efile)
         if ((not isinstance(exc, NameError) and not isinstance(exc, AttributeError))
-            or "\n" in str(exc)):
+            or "\n" not in str(exc)):
             lines = get_message_lines(typ, exc, tb)
         else:  # User-created Name/AttributeError with multiline message, GH-135511. 
              lines = [f"{typ.__name__}: {str(exc)}"]
