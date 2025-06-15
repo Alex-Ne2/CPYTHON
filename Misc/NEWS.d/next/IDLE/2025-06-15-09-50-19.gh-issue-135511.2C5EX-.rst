@@ -1,0 +1,1 @@
+Fixed `NameError` and `AttributeError` lack of the message in IDLE
