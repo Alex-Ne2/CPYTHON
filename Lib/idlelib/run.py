@@ -271,7 +271,13 @@ def print_exception():
                        "debugger_r.py", "bdb.py")
             cleanup_traceback(tbe, exclude)
             traceback.print_list(tbe, file=efile)
-        lines = get_message_lines(typ, exc, tb)
+        if not isinstance(exc, NameError) and not isinstance(exc, AttributeError):
+            lines = get_message_lines(typ, exc, tb)
+        else:
+            if "\n" in str(val):  #The message must be defined by user if "\n" in the message
+                lines = [f"{typ.__name__}: {str(val)}"]
+            else:
+                lines = get_message_lines(typ, exc, tb)
         for line in lines:
             print(line, end='', file=efile)
 
