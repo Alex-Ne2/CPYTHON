@@ -1542,6 +1542,36 @@
             break;
         }
 
+        case _GET_ITER_SELF: {
+            JitOptSymbol *null;
+            null = sym_new_null(ctx);
+            stack_pointer[0] = null;
+            stack_pointer += 1;
+            assert(WITHIN_STACK_BOUNDS());
+            break;
+        }
+
+        case _GET_ITER_INDEX: {
+            JitOptSymbol *index0;
+            index0 = sym_new_not_null(ctx);
+            stack_pointer[0] = index0;
+            stack_pointer += 1;
+            assert(WITHIN_STACK_BOUNDS());
+            break;
+        }
+
+        case _GET_ITER_RANGE: {
+            JitOptSymbol *stop;
+            JitOptSymbol *index;
+            stop = sym_new_not_null(ctx);
+            index = sym_new_not_null(ctx);
+            stack_pointer[-1] = stop;
+            stack_pointer[0] = index;
+            stack_pointer += 1;
+            assert(WITHIN_STACK_BOUNDS());
+            break;
+        }
+
         case _GET_YIELD_FROM_ITER: {
             JitOptSymbol *iter;
             iter = sym_new_not_null(ctx);
@@ -1550,6 +1580,21 @@
         }
 
         /* _FOR_ITER is not a viable micro-op for tier 2 */
+
+        case _ITER_CHECK_INDEX: {
+            break;
+        }
+
+        /* _FOR_ITER_INDEX is not a viable micro-op for tier 2 */
+
+        case _FOR_ITER_INDEX_TIER_TWO: {
+            JitOptSymbol *next;
+            next = sym_new_not_null(ctx);
+            stack_pointer[0] = next;
+            stack_pointer += 1;
+            assert(WITHIN_STACK_BOUNDS());
+            break;
+        }
 
         case _FOR_ITER_TIER_TWO: {
             JitOptSymbol *next;
@@ -1560,7 +1605,7 @@
             break;
         }
 
-        /* _INSTRUMENTED_FOR_ITER is not a viable micro-op for tier 2 */
+        /* _MONITOR_FOR_ITER is not a viable micro-op for tier 2 */
 
         case _ITER_CHECK_LIST: {
             break;
