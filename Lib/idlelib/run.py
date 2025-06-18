@@ -240,15 +240,19 @@ def get_message_lines(typ, exc, tb):
         return traceback.format_exception_only(typ, exc)
 
 
-def print_exception():
+def print_exception(in_test=False):
     import linecache
     linecache.checkcache()
     flush_stdout()
-    efile = sys.stderr
+    if not in_test:
+        efile = sys.stderr
+    else:
+        efile = io.StringIO()
     typ, val, tb = excinfo = sys.exc_info()
     sys.last_type, sys.last_value, sys.last_traceback = excinfo
     sys.last_exc = val
     seen = set()
+    err = io.StringIO()
 
     def print_exc(typ, exc, tb):
         seen.add(id(exc))
@@ -274,12 +278,14 @@ def print_exception():
         if ((not isinstance(exc, NameError) and not isinstance(exc, AttributeError))
             or "\n" not in str(exc)):
             lines = get_message_lines(typ, exc, tb)
-        else:  # User-created Name/AttributeError with multiline message, GH-135511.
-             lines = [f"{typ.__name__}: {str(exc)}"]
+        else:
+            lines = [f"{typ.__name__}: {str(exc)}"]            
         for line in lines:
             print(line, end='', file=efile)
+            print(line, end='', file=err)
 
     print_exc(typ, val, tb)
+    return err.getvalue()
 
 def cleanup_traceback(tb, exclude):
     "Remove excluded traces from beginning/end of tb; get cached lines"
