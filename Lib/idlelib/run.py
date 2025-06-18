@@ -247,7 +247,7 @@ def print_exception(in_test=False):
     if not in_test:
         efile = sys.stderr
     else:
-        efile = io.StringIO()
+        efile = io.StringIO()  #If in test, anything mustn't be printed to sys.stderr
     typ, val, tb = excinfo = sys.exc_info()
     sys.last_type, sys.last_value, sys.last_traceback = excinfo
     sys.last_exc = val
