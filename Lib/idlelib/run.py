@@ -240,7 +240,7 @@ def get_message_lines(typ, exc, tb):
         return traceback.format_exception_only(typ, exc)
 
 
-def print_exception(in_test=False):
+def print_exception(in_test=False): #Only when in test it is True, other it is False
     import linecache
     linecache.checkcache()
     flush_stdout()
@@ -273,7 +273,8 @@ def print_exception(in_test=False):
             print('Traceback (most recent call last):', file=efile)
             exclude = ("run.py", "rpc.py", "threading.py", "queue.py",
                        "debugger_r.py", "bdb.py")
-            cleanup_traceback(tbe, exclude)
+            if not in_test:  #When in test, the rpc.objecttable has no key 'exec'
+                cleanup_traceback(tbe, exclude)
             traceback.print_list(tbe, file=efile)
         if ((not isinstance(exc, NameError) and not isinstance(exc, AttributeError))
             or "\n" not in str(exc)):
