@@ -5,6 +5,8 @@ import textwrap
 import unittest
 import gc
 import os
+import random
+import string
 
 import _opcode
 
@@ -2361,6 +2363,24 @@ class TestUopsOptimization(unittest.TestCase):
 
         self.assertNotIn("_GUARD_TOS_INT", uops)
         self.assertNotIn("_GUARD_NOS_INT", uops)
+
+    def test_store_fast_pop_top_specialize_unicode(self):
+        def random_str(n):
+            return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(n))
+        def testfunc(args):
+            a, b, n = args
+            c = ''
+            for _ in range(n):
+                c += a + b
+            return c
+
+        r0, r1 = random_str(32), random_str(32)
+        res, ex = self._run_with_optimizer(testfunc, (r0, r1, TIER2_THRESHOLD))
+        self.assertAlmostEqual(res, TIER2_THRESHOLD * (r0 + r1))
+        self.assertIsNotNone(ex)
+        uops = get_opnames(ex)
+        self.assertIn("_POP_TOP_NOP", uops)
+        self.assertNotIn("_POP_TOP_UNICODE", uops)
 
     def test_attr_promotion_failure(self):
         # We're not testing for any specific uops here, just

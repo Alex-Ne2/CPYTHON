@@ -141,6 +141,12 @@
         }
 
         case _POP_TOP_UNICODE: {
+            JitOptRef value;
+            value = stack_pointer[-1];
+            if (PyJitRef_IsBorrowed(value) ||
+                sym_is_immortal(PyJitRef_Unwrap(value))) {
+                REPLACE_OP(this_instr, _POP_TOP_NOP, 0, 0);
+            }
             stack_pointer += -1;
             assert(WITHIN_STACK_BOUNDS());
             break;
@@ -564,6 +570,8 @@
             JitOptRef right;
             JitOptRef left;
             JitOptRef res;
+            JitOptRef l;
+            JitOptRef r;
             right = stack_pointer[-1];
             left = stack_pointer[-2];
             if (sym_is_const(ctx, left) && sym_is_const(ctx, right)) {
@@ -583,7 +591,13 @@
                 res = sym_new_type(ctx, &PyUnicode_Type);
                 stack_pointer += -1;
             }
+            l = left;
+            r = right;
             stack_pointer[-1] = res;
+            stack_pointer[0] = l;
+            stack_pointer[1] = r;
+            stack_pointer += 2;
+            assert(WITHIN_STACK_BOUNDS());
             break;
         }
 
