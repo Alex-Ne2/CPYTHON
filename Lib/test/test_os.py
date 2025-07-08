@@ -2655,6 +2655,74 @@ class LinkTests(unittest.TestCase):
         self.file2 = self.file1 + "2"
         self._test_link(self.file1, self.file2)
 
+
+@unittest.skipUnless(hasattr(os, 'linkat'), 'requires os.linkat')
+class LinkAtTests(unittest.TestCase):
+    @staticmethod
+    def linkat(*args):
+        try:
+            os.linkat(*args)
+        except OSError as exc:
+            if exc.errno == errno.ENOSYS:
+                self.skipTest(str(exc))
+            raise
+
+    def test_no_flags(self):
+        src = "linkat_src"
+        self.addCleanup(os_helper.unlink, src)
+        with open(src, "w", encoding='utf8') as fp:
+            fp.write("hello")
+
+        dst = "linkat_dst"
+        self.addCleanup(os_helper.unlink, dst)
+        self.linkat(os.AT_FDCWD, src, os.AT_FDCWD, dst)  # flags=0
+
+        with open(dst, encoding='utf8') as fp:
+            self.assertEqual(fp.read(), 'hello')
+
+    def test_destination_exists(self):
+        src = "linkat_src"
+        self.addCleanup(os_helper.unlink, src)
+        open(src, "w").close()
+
+        dst = "linkat_dst"
+        self.addCleanup(os_helper.unlink, dst)
+        open(dst, "w").close()
+
+        with self.assertRaises(FileExistsError):
+            self.linkat(os.AT_FDCWD, src, os.AT_FDCWD, dst)  # flags=0
+
+    @unittest.skipUnless(hasattr(os, 'O_TMPFILE'), 'need os.O_TMPFILE')
+    def check_flag(self, flag):
+        filename = os_helper.TESTFN
+        self.addCleanup(os_helper.unlink, filename)
+
+        fd = os.open(os.path.curdir, os.O_WRONLY | os.O_TMPFILE, 0o600)
+        os.write(fd, b"hello")
+        if flag == os.AT_EMPTY_PATH:
+            os.linkat(fd, b"",
+                      os.AT_FDCWD, filename,
+                      os.AT_EMPTY_PATH)
+        else:
+            os.linkat(fd, f"/proc/self/fd/{fd}",
+                      os.AT_FDCWD, filename,
+                      os.AT_SYMLINK_FOLLOW)
+        os.close(fd)
+
+        with open(filename, encoding='utf8') as fp:
+            self.assertEqual(fp.read(), 'hello')
+
+    @unittest.skipUnless(hasattr(os, 'AT_EMPTY_PATH'),
+                         'need os.AT_EMPTY_PATH')
+    def test_empty_path(self):
+        self.check_flag(os.AT_EMPTY_PATH)
+
+    @unittest.skipUnless(hasattr(os, 'AT_SYMLINK_FOLLOW'),
+                         'need os.AT_SYMLINK_FOLLOW')
+    def test_symlink_follow(self):
+        self.check_flag(os.AT_SYMLINK_FOLLOW)
+
+
 @unittest.skipIf(sys.platform == "win32", "Posix specific tests")
 class PosixUidGidTests(unittest.TestCase):
     # uid_t and gid_t are 32-bit unsigned integers on Linux
