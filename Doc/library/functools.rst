@@ -151,6 +151,14 @@ The :mod:`functools` module defines the following functions:
 .. decorator:: lru_cache(user_function)
                lru_cache(maxsize=128, typed=False)
 
+   .. method:: cache_info()
+      :no-typesetting:
+
+
+   .. method:: cache_clear()
+      :no-typesetting:
+
+
    Decorator to wrap a function with a memoizing callable that saves up to the
    *maxsize* most recent calls.  It can save time when an expensive or I/O bound
    function is periodically called with the same arguments.
@@ -284,9 +292,9 @@ The :mod:`functools` module defines the following functions:
    class decorator supplies the rest.  This simplifies the effort involved
    in specifying all of the possible rich comparison operations:
 
-   The class must define one of :meth:`__lt__`, :meth:`__le__`,
-   :meth:`__gt__`, or :meth:`__ge__`.
-   In addition, the class should supply an :meth:`__eq__` method.
+   The class must define one of :meth:`~object.__lt__`, :meth:`~object.__le__`,
+   :meth:`~object.__gt__`, or :meth:`~object.__ge__`.
+   In addition, the class should supply an :meth:`~object.__eq__` method.
 
    For example::
 
@@ -418,7 +426,7 @@ The :mod:`functools` module defines the following functions:
    like normal functions, are handled as descriptors).
 
    When *func* is a descriptor (such as a normal Python function,
-   :func:`classmethod`, :func:`staticmethod`, :func:`abstractmethod` or
+   :func:`classmethod`, :func:`staticmethod`, :func:`~abc.abstractmethod` or
    another instance of :class:`partialmethod`), calls to ``__get__`` are
    delegated to the underlying descriptor, and an appropriate
    :ref:`partial object<partial-objects>` returned as the result.
@@ -484,6 +492,9 @@ The :mod:`functools` module defines the following functions:
       *initial* is now supported as a keyword argument.
 
 .. decorator:: singledispatch
+
+   .. method:: register()
+      :no-typesetting:
 
    Transform a function into a :term:`single-dispatch <single
    dispatch>` :term:`generic function`.
@@ -783,7 +794,7 @@ The :mod:`functools` module defines the following functions:
       'Docstring'
 
    Without the use of this decorator factory, the name of the example function
-   would have been ``'wrapper'``, and the docstring of the original :func:`example`
+   would have been ``'wrapper'``, and the docstring of the original :func:`!example`
    would have been lost.
 
 
