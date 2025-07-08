@@ -867,6 +867,10 @@ For an example of the usage of queues for interprocess communication see
    locks/semaphores.  When a process first puts an item on the queue a feeder
    thread is started which transfers objects from a buffer into the pipe.
 
+   If the global start method has not been set, calling this function will
+   have the side effect of setting the current global start method.
+   See the :func:`get_context` function.
+
    The usual :exc:`queue.Empty` and :exc:`queue.Full` exceptions from the
    standard library's :mod:`queue` module are raised to signal timeouts.
 
@@ -977,6 +981,10 @@ For an example of the usage of queues for interprocess communication see
 
    It is a simplified :class:`Queue` type, very close to a locked :class:`Pipe`.
 
+   If the global start method has not been set, calling this function will
+   have the side effect of setting the current global start method.
+   See the :func:`get_context` function.
+
    .. method:: close()
 
       Close the queue: release internal resources.
@@ -1006,6 +1014,10 @@ For an example of the usage of queues for interprocess communication see
 
    :class:`JoinableQueue`, a :class:`Queue` subclass, is a queue which
    additionally has :meth:`task_done` and :meth:`join` methods.
+
+   If the global start method has not been set, calling this function will
+   have the side effect of setting the current global start method.
+   See the :func:`get_context` function.
 
    .. method:: task_done()
 
@@ -1361,12 +1373,20 @@ object -- see :ref:`multiprocessing-managers`.
 
    A barrier object: a clone of :class:`threading.Barrier`.
 
+   If the global start method has not been set, calling this function will
+   have the side effect of setting the current global start method.
+   See the :func:`get_context` function.
+
    .. versionadded:: 3.3
 
 .. class:: BoundedSemaphore([value])
 
    A bounded semaphore object: a close analog of
    :class:`threading.BoundedSemaphore`.
+
+   If the global start method has not been set, calling this function will
+   have the side effect of setting the current global start method.
+   See the :func:`get_context` function.
 
    A solitary difference from its close analog exists: its ``acquire`` method's
    first argument is named *block*, as is consistent with :meth:`Lock.acquire`.
@@ -1388,6 +1408,10 @@ object -- see :ref:`multiprocessing-managers`.
    If *lock* is specified then it should be a :class:`Lock` or :class:`RLock`
    object from :mod:`multiprocessing`.
 
+   If the global start method has not been set, calling this function will
+   have the side effect of setting the current global start method.
+   See the :func:`get_context` function.
+
    .. versionchanged:: 3.3
       The :meth:`~threading.Condition.wait_for` method was added.
 
@@ -1395,6 +1419,9 @@ object -- see :ref:`multiprocessing-managers`.
 
    A clone of :class:`threading.Event`.
 
+   If the global start method has not been set, calling this function will
+   have the side effect of setting the current global start method.
+   See the :func:`get_context` function.
 
 .. class:: Lock()
 
@@ -1409,6 +1436,10 @@ object -- see :ref:`multiprocessing-managers`.
    Note that :class:`Lock` is actually a factory function which returns an
    instance of ``multiprocessing.synchronize.Lock`` initialized with a
    default context.
+
+   If the global start method has not been set, calling this function will
+   have the side effect of setting the current global start method.
+   See the :func:`get_context` function.
 
    :class:`Lock` supports the :term:`context manager` protocol and thus may be
    used in :keyword:`with` statements.
@@ -1466,6 +1497,10 @@ object -- see :ref:`multiprocessing-managers`.
    Note that :class:`RLock` is actually a factory function which returns an
    instance of ``multiprocessing.synchronize.RLock`` initialized with a
    default context.
+
+   If the global start method has not been set, calling this function will
+   have the side effect of setting the current global start method.
+   See the :func:`get_context` function.
 
    :class:`RLock` supports the :term:`context manager` protocol and thus may be
    used in :keyword:`with` statements.
@@ -1525,6 +1560,10 @@ object -- see :ref:`multiprocessing-managers`.
 .. class:: Semaphore([value])
 
    A semaphore object: a close analog of :class:`threading.Semaphore`.
+
+   If the global start method has not been set, calling this function will
+   have the side effect of setting the current global start method.
+   See the :func:`get_context` function.
 
    A solitary difference from its close analog exists: its ``acquire`` method's
    first argument is named *block*, as is consistent with :meth:`Lock.acquire`.
@@ -1660,7 +1699,7 @@ processes.
    attributes which allow one to use it to store and retrieve strings -- see
    documentation for :mod:`ctypes`.
 
-.. function:: Array(typecode_or_type, size_or_initializer, *, lock=True)
+.. function:: Array(typecode_or_type, size_or_initializer, *, lock=True, ctx=None)
 
    The same as :func:`RawArray` except that depending on the value of *lock* a
    process-safe synchronization wrapper may be returned instead of a raw ctypes
@@ -1674,9 +1713,14 @@ processes.
    automatically protected by a lock, so it will not necessarily be
    "process-safe".
 
-   Note that *lock* is a keyword-only argument.
+   *ctx* is a context object, or ``None`` (use the current context). If ``None``,
+   calling this function will have the side effect of setting the current global
+   start method if it has not been set already. See the :func:`get_context`
+   function.
 
-.. function:: Value(typecode_or_type, *args, lock=True)
+   Note that *lock* and *ctx* are keyword-only argument.
+
+.. function:: Value(typecode_or_type, *args, lock=True, ctx=None)
 
    The same as :func:`RawValue` except that depending on the value of *lock* a
    process-safe synchronization wrapper may be returned instead of a raw ctypes
@@ -1689,18 +1733,28 @@ processes.
    automatically protected by a lock, so it will not necessarily be
    "process-safe".
 
-   Note that *lock* is a keyword-only argument.
+   *ctx* is a context object, or ``None`` (use the current context). If ``None``,
+   calling this function will have the side effect of setting the current global
+   start method if it has not been set already. See the :func:`get_context`
+   function.
+
+   Note that *lock* and *ctx* are keyword-only argument.
 
 .. function:: copy(obj)
 
    Return a ctypes object allocated from shared memory which is a copy of the
    ctypes object *obj*.
 
-.. function:: synchronized(obj[, lock])
+.. function:: synchronized(obj, lock=None, ctx=None)
 
    Return a process-safe wrapper object for a ctypes object which uses *lock* to
    synchronize access.  If *lock* is ``None`` (the default) then a
    :class:`multiprocessing.RLock` object is created automatically.
+
+   *ctx* is a context object, or ``None`` (use the current context). If ``None``,
+   calling this function will have the side effect of setting the current global
+   start method if it has not been set already. See the :func:`get_context`
+   function.
 
    A synchronized wrapper will have two methods in addition to those of the
    object it wraps: :meth:`get_obj` returns the wrapped object and
@@ -1819,8 +1873,10 @@ their parent process exits.  The manager classes are defined in the
    *serializer* must be ``'pickle'`` (use :mod:`pickle` serialization) or
    ``'xmlrpclib'`` (use :mod:`xmlrpc.client` serialization).
 
-   *ctx* is a context object, or ``None`` (use the current context). See the
-   :func:`get_context` function.
+   *ctx* is a context object, or ``None`` (use the current context). If ``None``,
+   calling this function will have the side effect of setting the current global
+   start method if it has not been set already. See the :func:`get_context`
+   function.
 
    *shutdown_timeout* is a timeout in seconds used to wait until the process
    used by the manager completes in the :meth:`shutdown` method. If the
@@ -2313,7 +2369,9 @@ with the :class:`Pool` class.
    the worker processes.  Usually a pool is created using the
    function :func:`multiprocessing.Pool` or the :meth:`Pool` method
    of a context object.  In both cases *context* is set
-   appropriately.
+   appropriately. If ``None``, calling this function will have the side effect
+   of setting the current global start method if it has not been set already.
+   See the :func:`get_context` function.
 
    Note that the methods of the pool object should only be called by
    the process which created the pool.
