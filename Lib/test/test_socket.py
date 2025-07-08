@@ -1538,6 +1538,41 @@ class GeneralModuleTests(unittest.TestCase):
         reuse = sock.getsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR)
         self.assertFalse(reuse == 0, "failed to set reuse mode")
 
+    def test_setsockopt_errors(self):
+        # See issue #107546.
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.addCleanup(sock.close)
+
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  # No error expected.
+
+        with self.assertRaises(OverflowError):
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 2 ** 100)
+
+        with self.assertRaises(OverflowError):
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, - 2 ** 100)
+
+        with self.assertRaises(OverflowError):
+            sock.setsockopt(socket.SOL_SOCKET, 2 ** 100, 1)
+
+        with self.assertRaises(OverflowError):
+            sock.setsockopt(2 ** 100, socket.SO_REUSEADDR, 1)
+
+        msg = "socket option should be should be integer, bytes-like object or None"
+        with self.assertRaises(TypeError, msg=msg):
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, dict())
+
+        msg = "setsockopt() takes 3 or 4 arguments (2 given)"
+        with self.assertRaises(TypeError, msg=msg):
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR)
+
+        msg = "setsockopt() take 4 arguments when socket option is None (3 given)"
+        with self.assertRaises(TypeError, msg=msg):
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, None)
+
+        msg = "setsockopt() argument 3 must be NoneType, not int"
+        with self.assertRaises(TypeError, msg=msg):
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1, 2)
+
     def testSendAfterClose(self):
         # testing send() after close() with timeout
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
